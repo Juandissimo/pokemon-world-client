@@ -1,0 +1,766 @@
+#!/usr/bin/env node
+'use strict';
+
+const fs = require("fs");
+const path = require('path');
+const child_process = require("child_process");
+
+const rootDir = path.resolve(__dirname, '..');
+const dataDir = path.resolve(rootDir, 'data');
+
+process.stdout.write("Syncing data from Git repository... ");
+child_process.execSync('git pull', {
+	cwd: path.resolve(dataDir, 'Pokemon-World'),
+});
+console.log("DONE");
+
+const Tools = require('../data/Pokemon-World/tools');
+const toId = Tools.getId;
+process.stdout.write("Loading gen 6 data... ");
+Tools.includeData();
+console.log("DONE");
+
+function es3stringify(obj) {
+	let buf = JSON.stringify(obj);
+	buf = buf.replace(/\"([A-Za-z][A-Za-z0-9]*)\"\:/g, '$1:');
+	buf = buf.replace(/return\:/g, '"return":').replace(/new\:/g, '"new":').replace(/delete\:/g, '"delete":');
+	return buf;
+}
+
+function requireNoCache(pathSpec) {
+	delete require.cache[require.resolve(pathSpec)];
+	return require(pathSpec);
+}
+
+/*********************************************************
+ * Build search-index.js
+ *********************************************************/
+
+{
+	process.stdout.write("Building `data/search-index.js`... ");
+
+	let index = [];
+
+	index = index.concat(Object.keys(Tools.data.Pokedex).map(x => x + ' pokemon'));
+	index = index.concat(Object.keys(Tools.data.Movedex).map(x => x + ' move'));
+	index = index.concat(Object.keys(Tools.data.Items).map(x => x + ' item'));
+	index = index.concat(Object.keys(Tools.data.Abilities).map(x => x + ' ability'));
+	index = index.concat(Object.keys(Tools.data.TypeChart).map(x => toId(x) + ' type'));
+	index = index.concat(['physical', 'special', 'status'].map(x => toId(x) + ' category'));
+	index = index.concat(['monster', 'water1', 'bug', 'flying', 'field', 'fairy', 'grass', 'humanlike', 'water3', 'mineral', 'amorphous', 'water2', 'ditto', 'dragon', 'undiscovered'].map(x => toId(x) + ' egggroup'));
+	index = index.concat(['ou', 'uu', 'ru', 'nu', 'pu', 'lc', 'nfe', 'uber', 'bl', 'bl2', 'bl3', 'bl4', 'cap'].map(x => toId(x) + ' tier'));
+
+	try {
+		for (const file of fs.readdirSync(path.resolve(rootDir, '../dex.pokemon-world.online/articles/'))) {
+			if (file.endsWith('.md')) {
+				index.push('' + file.slice(0, -3) + ' article');
+			}
+		}
+	} catch (e) {
+		console.log('\n(WARNING: NO ARTICLES)');
+	}
+	index.push('pokemon article');
+	index.push('moves article');
+
+	// generate aliases
+	function generateAlias(id, name, type) {
+		let i = name.lastIndexOf(' ');
+		if (i < 0) i = name.lastIndexOf('-');
+		if (name.endsWith('-Mega-X') || name.endsWith('-Mega-Y')) {
+			index.push('mega' + toId(name.slice(0, -7) + name.slice(-1)) + ' ' + type + ' ' + id + ' 0');
+			index.push('m' + toId(name.slice(0, -7) + name.slice(-1)) + ' ' + type + ' ' + id + ' 0');
+			index.push('mega' + toId(name.slice(-1)) + ' ' + type + ' ' + id + ' ' + toId(name.slice(0, -7)).length);
+			return;
+		}
+		if (name.endsWith('-Mega')) {
+			index.push('mega' + toId(name.slice(0, -5)) + ' ' + type + ' ' + id + ' 0');
+			index.push('m' + toId(name.slice(0, -5)) + ' ' + type + ' ' + id + ' 0');
+			return;
+		}
+		if (name.endsWith('-Alola')) {
+			index.push('alolan' + toId(name.slice(0, -6)) + ' ' + type + ' ' + id + ' 0');
+			return;
+		}
+		let oldI = i;
+		if (name === 'Bronzong') i = 4;
+		if (name === 'Charizard') i = 5;
+		if (name === 'Garchomp') i = 3;
+		if (name === 'Hariyama') i = 4;
+
+		if (name === 'Acupressure') i = 3;
+		if (name === 'Aromatherapy') i = 5;
+		if (name === 'Boomburst') i = 4;
+		if (name === 'Crabhammer') i = 4;
+		if (name === 'Discharge') i = 3;
+		if (name === 'Earthquake') i = 5;
+		if (name === 'Extrasensory') i = 5;
+		if (name === 'Flamethrower') i = 5;
+		if (name === 'Headbutt') i = 4;
+		if (name === 'Moonblast') i = 4;
+		if (name === 'Moonlight') i = 4;
+		if (name === 'Overheat') i = 4;
+		if (name === 'Outrage') i = 3;
+		if (name === 'Octazooka') i = 4;
+		if (name === 'Payback') i = 3;
+		if (name === 'Psyshock') i = 3;
+		if (name === 'Psywave') i = 3;
+		if (name === 'Rototiller') i = 4;
+		if (name === 'Rollout') i = 4;
+		if (name === 'Safeguard') i = 4;
+		if (name === 'Sandstorm') i = 4;
+		if (name === 'Smokescreen') i = 5;
+		if (name === 'Stockpile') i = 5;
+		if (name === 'Steamroller') i = 5;
+		if (name === 'Superpower') i = 5;
+		if (name === 'Supersonic') i = 5;
+		if (name === 'Synchronoise') i = 7;
+		if (name === 'Tailwind') i = 4;
+		if (name === 'Telekinesis') i = 4;
+		if (name === 'Teleport') i = 4;
+		if (name === 'Thunderbolt') i = 7;
+		if (name === 'Twineedle') i = 3;
+		if (name === 'Uproar') i = 2;
+		if (name === 'Venoshock') i = 4;
+		if (name === 'Whirlpool') i = 5;
+		if (name === 'Whirlwind') i = 5;
+		let acronym;
+		if (oldI < 0 && i > 0) {
+			acronym = toId(name.charAt(0) + name.slice(i));
+		}
+		if (i < 0) return;
+		index.push('' + toId(name.slice(i)) + ' ' + type + ' ' + id + ' ' + toId(name.slice(0, i)).length);
+		if (name.startsWith('Hidden Power ')) {
+			acronym = 'hp' + toId(name.substr(13));
+			index.push('' + acronym + ' ' + type + ' ' + id + ' 0');
+		} else if (name === 'Hidden Power') {
+			index.push('hp ' + type + ' ' + id + ' 0');
+		} else if (name.includes(' ')) {
+			acronym = toId(name.split(' ').map((x, i) => i !== 0 ? x : x.charAt(0)).join(''));
+		} else if (name.includes('-') && name.charAt(1) !== '-') {
+			acronym = toId(name.split('-').map((x, i) => i !== 0 ? x : x.charAt(0)).join(''));
+		}
+		if (acronym) {
+			index.push('' + acronym + ' ' + type + ' ' + id + ' 0');
+		}
+		if (name === 'High Jump Kick') {
+			index.push('hjkick ' + type + ' ' + id + ' 0');
+		} else if (name === 'Wake-Up Slap') {
+			index.push('wuslap ' + type + ' ' + id + ' 0');
+			index.push('wupslap ' + type + ' ' + id + ' 0');
+		} else if (name === 'Zen Headbutt') {
+			index.push('zhbutt ' + type + ' ' + id + ' 0');
+		}
+
+		let i2 = name.lastIndexOf(' ', i - 1);
+		if (i2 < 0) i2 = name.lastIndexOf('-', i - 1);
+		if (name === 'Zen Headbutt') i2 = 8;
+		if (i2 >= 0) {
+			index.push('' + toId(name.slice(i2)) + ' ' + type + ' ' + id + ' ' + toId(name.slice(0, i2)).length);
+		}
+	}
+	for (const id in Tools.data.Pokedex) {
+		const name = Tools.data.Pokedex[id].species;
+		generateAlias(id, name, 'pokemon');
+	}
+	for (const id in Tools.data.Movedex) {
+		const name = Tools.data.Movedex[id].name;
+		generateAlias(id, name, 'move');
+	}
+	for (const id in Tools.data.Items) {
+		const name = Tools.data.Items[id].name;
+		generateAlias(id, name, 'item');
+	}
+	for (const id in Tools.data.Abilities) {
+		const name = Tools.data.Abilities[id].name;
+		generateAlias(id, name, 'ability');
+	}
+
+	index.sort();
+
+	// manually rearrange
+	index[index.indexOf('grass type')] = 'grass egggroup';
+	index[index.indexOf('grass egggroup')] = 'grass type';
+
+	index[index.indexOf('fairy type')] = 'fairy egggroup';
+	index[index.indexOf('fairy egggroup')] = 'fairy type';
+
+	index[index.indexOf('flying type')] = 'flying egggroup';
+	index[index.indexOf('flying egggroup')] = 'flying type';
+
+	index[index.indexOf('dragon type')] = 'dragon egggroup';
+	index[index.indexOf('dragon egggroup')] = 'dragon type';
+
+	index[index.indexOf('bug type')] = 'bug egggroup';
+	index[index.indexOf('bug egggroup')] = 'bug type';
+
+	index[index.indexOf('psychic type')] = 'psychic move';
+	index[index.indexOf('psychic move')] = 'psychic type';
+
+	index[index.indexOf('ditto pokemon')] = 'ditto egggroup';
+	index[index.indexOf('ditto egggroup')] = 'ditto pokemon';
+
+
+	let BattleSearchIndex = index.map(x => {
+		x = x.split(' ');
+		if (x.length > 3) {
+			x[3] = Number(x[3]);
+			x[2] = index.indexOf(x[2] + ' ' + x[1]);
+		}
+		return x;
+	});
+
+	let BattleSearchIndexOffset = BattleSearchIndex.map((entry, i) => {
+		const id = entry[0];
+		let name = '';
+		switch (entry[1]) {
+		case 'pokemon': name = Tools.getTemplate(id).species; break;
+		case 'move': name = Tools.getMove(id).name; break;
+		case 'item': name = Tools.getItem(id).name; break;
+		case 'ability': name = Tools.getAbility(id).name; break;
+		}
+		let res = '';
+		let nonAlnum = 0;
+		for (let i = 0, j = 0; i < id.length; i++, j++) {
+			while (!/[a-zA-Z0-9]/.test(name[j])) {
+				j++;
+				nonAlnum++;
+			}
+			res += nonAlnum;
+		}
+		if (nonAlnum) return res;
+		return '';
+	});
+
+	let BattleSearchCountIndex = {};
+	for (const type in Tools.data.TypeChart) {
+		BattleSearchCountIndex[type + ' move'] = Object.keys(Tools.data.Movedex).filter(id => (Tools.data.Movedex[id].type === type)).length;
+	}
+
+	for (const type in Tools.data.TypeChart) {
+		BattleSearchCountIndex[type + ' pokemon'] = Object.keys(Tools.data.Pokedex).filter(id => (Tools.data.Pokedex[id].types.indexOf(type) >= 0)).length;
+	}
+
+	let buf = '// automatically built with githooks/build-indexes\n\n';
+
+	buf += 'exports.BattleSearchIndex = ' + JSON.stringify(BattleSearchIndex) + ';\n\n';
+
+	buf += 'exports.BattleSearchIndexOffset = ' + JSON.stringify(BattleSearchIndexOffset) + ';\n\n';
+
+	buf += 'exports.BattleSearchCountIndex = ' + JSON.stringify(BattleSearchCountIndex) + ';\n\n';
+
+	fs.writeFileSync(path.resolve(dataDir, 'search-index.js'), buf);
+}
+
+console.log("DONE");
+
+/*********************************************************
+ * Build teambuilder-tables.js
+ *********************************************************/
+
+let alolaDex = {
+	"Caterpie":1, "Metapod":1, "Butterfree":1, "Rattata-Alola":1, "Raticate-Alola":1, "Spearow":1, "Fearow":1, "Pikachu":1, "Raichu-Alola":1, "Sandshrew-Alola":1, "Sandslash-Alola":1, "Clefairy":1, "Clefable":1, "Vulpix-Alola":1, "Ninetales-Alola":1, "Jigglypuff":1, "Wigglytuff":1, "Zubat":1, "Golbat":1, "Paras":1, "Parasect":1, "Diglett-Alola":1, "Dugtrio-Alola":1, "Meowth-Alola":1, "Persian-Alola":1, "Psyduck":1, "Golduck":1, "Mankey":1, "Primeape":1, "Growlithe":1, "Arcanine":1, "Poliwag":1, "Poliwhirl":1, "Poliwrath":1, "Abra":1, "Kadabra":1, "Alakazam":1, "Machop":1, "Machoke":1, "Machamp":1, "Tentacool":1, "Tentacruel":1, "Geodude-Alola":1, "Graveler-Alola":1, "Golem-Alola":1, "Slowpoke":1, "Slowbro":1, "Magnemite":1, "Magneton":1, "Grimer-Alola":1, "Muk-Alola":1, "Shellder":1, "Cloyster":1, "Gastly":1, "Haunter":1, "Gengar":1, "Drowzee":1, "Hypno":1, "Exeggcute":1, "Exeggutor-Alola":1, "Cubone":1, "Marowak-Alola":1, "Chansey":1, "Kangaskhan":1, "Goldeen":1, "Seaking":1, "Staryu":1, "Starmie":1, "Scyther":1, "Electabuzz":1, "Magmar":1, "Pinsir":1, "Tauros":1, "Magikarp":1, "Gyarados":1, "Lapras":1, "Ditto":1, "Eevee":1, "Vaporeon":1, "Jolteon":1, "Flareon":1, "Porygon":1, "Aerodactyl":1, "Snorlax":1, "Dratini":1, "Dragonair":1, "Dragonite":1, "Ledyba":1, "Ledian":1, "Spinarak":1, "Ariados":1, "Crobat":1, "Chinchou":1, "Lanturn":1, "Pichu":1, "Cleffa":1, "Igglybuff":1, "Sudowoodo":1, "Politoed":1, "Espeon":1, "Umbreon":1, "Murkrow":1, "Slowking":1, "Misdreavus":1, "Snubbull":1, "Granbull":1, "Scizor":1, "Sneasel":1, "Corsola":1, "Delibird":1, "Skarmory":1, "Porygon2":1, "Smeargle":1, "Elekid":1, "Magby":1, "Miltank":1, "Blissey":1, "Wingull":1, "Pelipper":1, "Surskit":1, "Masquerain":1, "Makuhita":1, "Hariyama":1, "Nosepass":1, "Sableye":1, "Carvanha":1, "Sharpedo":1, "Wailmer":1, "Wailord":1, "Torkoal":1, "Spinda":1, "Trapinch":1, "Vibrava":1, "Flygon":1, "Barboach":1, "Whiscash":1, "Feebas":1, "Milotic":1, "Castform":1, "Absol":1, "Snorunt":1, "Glalie":1, "Relicanth":1, "Luvdisc":1, "Bagon":1, "Shelgon":1, "Salamence":1, "Beldum":1, "Metang":1, "Metagross":1, "Cranidos":1, "Rampardos":1, "Shieldon":1, "Bastiodon":1, "Shellos":1, "Gastrodon":1, "Drifloon":1, "Drifblim":1, "Mismagius":1, "Honchkrow":1, "Bonsly":1, "Happiny":1, "Gible":1, "Gabite":1, "Garchomp":1, "Munchlax":1, "Riolu":1, "Lucario":1, "Finneon":1, "Lumineon":1, "Weavile":1, "Magnezone":1, "Electivire":1, "Magmortar":1, "Leafeon":1, "Glaceon":1, "Porygon-Z":1, "Probopass":1, "Froslass":1, "Lillipup":1, "Herdier":1, "Stoutland":1, "Roggenrola":1, "Boldore":1, "Gigalith":1, "Cottonee":1, "Whimsicott":1, "Petilil":1, "Lilligant":1, "Sandile":1, "Krokorok":1, "Krookodile":1, "Tirtouga":1, "Carracosta":1, "Archen":1, "Archeops":1, "Trubbish":1, "Garbodor":1, "Vanillite":1, "Vanillish":1, "Vanilluxe":1, "Emolga":1, "Alomomola":1, "Rufflet":1, "Braviary":1, "Vullaby":1, "Mandibuzz":1, "Fletchling":1, "Fletchinder":1, "Talonflame":1, "Pancham":1, "Pangoro":1, "Sylveon":1, "Carbink":1, "Goomy":1, "Sliggoo":1, "Goodra":1, "Klefki":1, "Phantump":1, "Trevenant":1, "Zygarde":1, "Rowlet":1, "Dartrix":1, "Decidueye":1, "Litten":1, "Torracat":1, "Incineroar":1, "Popplio":1, "Brionne":1, "Primarina":1, "Pikipek":1, "Trumbeak":1, "Toucannon":1, "Yungoos":1, "Gumshoos":1, "Grubbin":1, "Charjabug":1, "Vikavolt":1, "Crabrawler":1, "Crabominable":1, "Oricorio":1, "Cutiefly":1, "Ribombee":1, "Rockruff":1, "Lycanroc":1, "Wishiwashi":1, "Mareanie":1, "Toxapex":1, "Mudbray":1, "Mudsdale":1, "Dewpider":1, "Araquanid":1, "Fomantis":1, "Lurantis":1, "Morelull":1, "Shiinotic":1, "Salandit":1, "Salazzle":1, "Stufful":1, "Bewear":1, "Bounsweet":1, "Steenee":1, "Tsareena":1, "Comfey":1, "Oranguru":1, "Passimian":1, "Wimpod":1, "Golisopod":1, "Sandygast":1, "Palossand":1, "Pyukumuku":1, "Type: Null":1, "Silvally":1, "Minior":1, "Komala":1, "Turtonator":1, "Togedemaru":1, "Mimikyu":1, "Bruxish":1, "Drampa":1, "Dhelmise":1, "Jangmo-o":1, "Hakamo-o":1, "Kommo-o":1, "Tapu Koko":1, "Tapu Lele":1, "Tapu Bulu":1, "Tapu Fini":1, "Cosmog":1, "Cosmoem":1, "Solgaleo":1, "Lunala":1, "Nihilego":1, "Buzzwole":1, "Pheromosa":1, "Xurkitree":1, "Celesteela":1, "Kartana":1, "Guzzlord":1, "Necrozma":1, "Magearna":1, "Marshadow":1,
+};
+
+process.stdout.write("Building `data/teambuilder-tables.js`... ");
+
+{
+	const BattleTeambuilderTable = {};
+
+	let buf = '// automatically built with githooks/build-indexes\n\n';
+
+	// process.stdout.write("\n  ");
+	for (const genIdent of [7, -7.5, 6, -6, 5, 4, 3, 2, 1]) {
+		const isDoubles = (genIdent < 0);
+		const isVGC = (genIdent === -7.5);
+		const genNum = Math.floor(isDoubles ? -genIdent : genIdent);
+		const gen = 'gen' + genNum;
+		// process.stdout.write("" + gen + (isDoubles ? " doubles" : "") + "... ");
+		const pokemon = Object.keys(Tools.data.Pokedex);
+		pokemon.sort();
+		const tierTable = {};
+		for (const id of pokemon) {
+			const template = (() => {
+				if (gen === 'gen7') return Tools.getTemplate(id);
+				return Tools.mod(gen).getTemplate(id);
+			})();
+			if (template.gen > genNum) continue;
+			const tier = (() => {
+				if (isVGC) {
+					if (template.tier === 'Illegal') return 'Illegal';
+					if (template.species in alolaDex || template.baseSpecies in alolaDex) {
+						if (template.tier === 'NFE') return 'NFE';
+						if (template.tier === 'LC') return 'NFE';
+						return 'Legal';
+					}
+					return 'Illegal';
+				}
+				if (isDoubles) {
+					let banlist = Tools.getFormat('doublesou').banlist;
+					if (banlist.indexOf(template.species) >= 0 || banlist.indexOf(template.baseSpecies) >= 0) {
+						return "DUber";
+					}
+					banlist = Tools.getFormat('doublesuu').banlist;
+					if (banlist.indexOf(template.species) >= 0 || banlist.indexOf(template.baseSpecies) >= 0) {
+						return "DOU";
+					}
+					banlist = Tools.getFormat('doublesnu').banlist;
+					if (banlist) {
+						if (banlist.indexOf(template.species) >= 0 || banlist.indexOf(template.baseSpecies) >= 0) {
+							return "DUU";
+						}
+					}
+					if (template.tier === 'LC' || template.tier === 'LC Ubers' || template.tier === 'NFE') return 'NFE';
+					if (!banlist) return "DUU";
+					return "DNU";
+				}
+				return template.tier;
+			})();
+			if (template.forme) {
+				if (template.baseSpecies in {Aegislash:1, Castform:1, Cherrim:1, Darmanitan:1, Meloetta:1}) {
+					continue;
+				}
+			}
+
+			if (!tierTable[tier]) tierTable[tier] = [];
+			tierTable[tier].push(id);
+			if (gen === 'gen6' && id in {ferroseed:1, pawniard:1, vullaby:1} && tier !== 'LC') {
+				if (!tierTable['LC']) tierTable['LC'] = [];
+				tierTable['LC'].push(id);
+			} else if (gen === 'gen5' && id in {misdreavus:1, munchlax:1, ferroseed:1} && tier !== 'LC') {
+				if (!tierTable['LC']) tierTable['LC'] = [];
+				tierTable['LC'].push(id);
+			} else if (gen === 'gen4' && id in {clamperl:1, diglett:1, gligar:1, hippopotas:1, snover:1, wynaut:1} && tier !== 'LC') {
+				if (!tierTable['LC']) tierTable['LC'] = [];
+				tierTable['LC'].push(id);
+			}
+		}
+
+		const tiers = [];
+		const items = [];
+		const formatSlices = {};
+
+		if (isVGC) {
+			BattleTeambuilderTable[gen + 'vgc'] = {};
+			BattleTeambuilderTable[gen + 'vgc'].tiers = tiers;
+			BattleTeambuilderTable[gen + 'vgc'].formatSlices = formatSlices;
+		} else if (isDoubles) {
+			BattleTeambuilderTable[gen + 'doubles'] = {};
+			BattleTeambuilderTable[gen + 'doubles'].tiers = tiers;
+			BattleTeambuilderTable[gen + 'doubles'].formatSlices = formatSlices;
+		} else if (gen === 'gen7') {
+			BattleTeambuilderTable.tiers = tiers;
+			BattleTeambuilderTable.items = items;
+			BattleTeambuilderTable.formatSlices = formatSlices;
+		} else {
+			BattleTeambuilderTable[gen] = {};
+			BattleTeambuilderTable[gen].tiers = tiers;
+			BattleTeambuilderTable[gen].items = items;
+			BattleTeambuilderTable[gen].formatSlices = formatSlices;
+		}
+
+		const tierOrder = (() => {
+			if (isVGC) {
+				return ["Legal", "NFE"];
+			}
+			if (gen === 'gen1' || gen === 'gen2' || gen === 'gen3') {
+				return ["Uber", "OU", "BL", "UU", "BL2", "NU", "NFE", "LC Uber", "LC"];
+			}
+			if (gen === 'gen4') {
+				return ["CAP", "Uber", "OU", "BL", "UU", "BL2", "NU", "NFE", "LC Uber", "LC"];
+			}
+			if (gen === 'gen5') {
+				return ["CAP", "Uber", "OU", "BL", "UU", "BL2", "RU", "BL3", "NU", "NFE", "LC Uber", "LC"];
+			}
+			if (gen === 'gen7') {
+				return ["CAP", "Uber", "Bank-Uber", "New", "Bank", "Unreleased", "NFE", "Bank-NFE", "LC", "Bank-LC"];
+			}
+			if (isDoubles) {
+				return ["DUber", "DOU", "DUU", "DNU", "NFE"];
+			}
+			return ["CAP", "Uber", "OU", "BL", "(OU)", "UU", "BL2", "RU", "BL3", "NU", "BL4", "PU", "NFE", "LC Uber", "LC"];
+		})();
+
+		for (const tier of tierOrder) {
+			if (tier === "OU" || tier === "Uber" || tier === "UU" || tier === "RU" || tier === "NU" || tier === "PU" || tier === "LC" || tier === "DOU" || tier === "DUU" || tier === "DNU" || tier === "(PU)" || tier === "New" || tier === "Legal") {
+				formatSlices[tier === "(PU)" ? "FU" : tier] = tiers.length;
+			}
+			if (!tierTable[tier]) continue;
+			if (tier === '(PU)') {
+				// tiers.push(['header', "Below PU"]);
+			} else if (tier.charAt(0) === '(') {
+				tiers.push(['header', tier.slice(1, -1) + " by technicality"]);
+			} else if (tier === "NFE") {
+				tiers.push(['header', "NFEs not in a higher tier"]);
+			} else {
+				tiers.push(['header', tier]);
+			}
+			tiers.push(...tierTable[tier]);
+		}
+
+		if (isDoubles) continue;
+
+		const itemList = Object.keys(Tools.data.Items);
+		itemList.sort();
+
+		const greatItems = [['header', "Popular items"]];
+		const goodItems = [['header', "Items"]];
+		const specificItems = [['header', "Pok&eacute;mon-specific items"]];
+		const poorItems = [['header', "Usually useless items"]];
+		const badItems = [['header', "Useless items"]];
+		const unreleasedItems = [];
+		if (genNum === 6) unreleasedItems.push(['header', "Unreleased"]);
+		for (const id of itemList) {
+			const item = Tools.getItem(id);
+			if (item.gen > genNum) {
+				continue;
+			}
+			if (item.isNonstandard && genNum !== 2) continue;
+			switch (id) {
+			case 'leftovers':
+			case 'lifeorb':
+			case 'choiceband':
+			case 'choicescarf':
+			case 'choicespecs':
+			case 'eviolite':
+			case 'assaultvest':
+			case 'focussash':
+			case 'powerherb':
+			case 'mentalherb':
+			case 'rockyhelmet':
+				greatItems.push(id);
+				break;
+			case 'lumberry':
+			case 'sitrusberry':
+				if (genNum === 2) goodItems.push(id);
+				else greatItems.push(id);
+				break;
+			case 'berryjuice':
+				if (genNum === 2) poorItems.push(id);
+				else goodItems.push(id);
+				break;
+			case 'dragonfang':
+				if (genNum === 2) badItems.push(id);
+				else goodItems.push(id);
+				break;
+			case 'mail':
+				if (genNum === 6) unreleasedItems.push(id);
+				else goodItems.push(id);
+				break;
+			// Legendaries
+			case 'adamantorb':
+			case 'griseousorb':
+			case 'lustrousorb':
+			case 'blueorb':
+			case 'redorb':
+			case 'souldew':
+			// Other
+			// fallsthrough
+			case 'stick':
+			case 'thickclub':
+			case 'lightball':
+			case 'luckypunch':
+			case 'quickpowder':
+			case 'metalpowder':
+			case 'deepseascale':
+			case 'deepseatooth':
+				specificItems.push(id);
+				break;
+			// Fling-only
+			case 'rarebone':
+			case 'belueberry':
+			case 'blukberry':
+			case 'cornnberry':
+			case 'durinberry':
+			case 'hondewberry':
+			case 'magostberry':
+			case 'nanabberry':
+			case 'nomelberry':
+			case 'pamtreberry':
+			case 'pinapberry':
+			case 'pomegberry':
+			case 'qualotberry':
+			case 'rabutaberry':
+			case 'razzberry':
+			case 'spelonberry':
+			case 'tamatoberry':
+			case 'watmelberry':
+			case 'wepearberry':
+			case 'energypowder':
+			case 'electirizer':
+			case 'oldamber':
+				badItems.push(id);
+				break;
+			// outclassed items
+			case 'aguavberry':
+			case 'aspearberry':
+			case 'bindingband':
+			case 'cheriberry':
+			case 'destinyknot':
+			case 'enigmaberry':
+			case 'figyberry':
+			case 'floatstone':
+			case 'ironball':
+			case 'jabocaberry':
+			case 'oranberry':
+			case 'machobrace':
+			case 'magoberry':
+			case 'pechaberry':
+			case 'persimberry':
+			case 'rawstberry':
+			case 'ringtarget':
+			case 'rowapberry':
+			case 'wikiberry':
+			// gen 2
+			// fallsthrough
+			case 'psncureberry':
+			case 'przcureberry':
+			case 'burntberry':
+			case 'bitterberry':
+			case 'iceberry':
+			case 'berry':
+				poorItems.push(id);
+				break;
+			default:
+				if (item.name.endsWith(" Ball")) {
+					badItems.push(id);
+				} else if (item.name.endsWith(" Fossil")) {
+					badItems.push(id);
+				} else if (item.name.endsWith(" Gem") && item.name !== "Normal Gem") {
+					if (genNum === 6) {
+						unreleasedItems.push(id);
+					} else if (item.name === "Flying Gem") {
+						greatItems.push(id);
+					} else {
+						goodItems.push(id);
+					}
+				} else if (item.name.endsWith(" Drive")) {
+					specificItems.push(id);
+				} else if (item.megaStone) {
+					specificItems.push(id);
+				} else {
+					goodItems.push(id);
+				}
+			}
+		}
+		items.push(...greatItems);
+		items.push(...goodItems);
+		items.push(...specificItems);
+		items.push(...poorItems);
+		items.push(...badItems);
+		items.push(...unreleasedItems);
+	}
+
+	//
+	// Learnset table
+	//
+
+	const learnsets = {};
+	BattleTeambuilderTable.learnsets = learnsets;
+	for (const id in Tools.data.Learnsets) {
+		const learnset = Tools.data.Learnsets[id].learnset;
+		learnsets[id] = {};
+		for (const moveid in learnset) {
+			const gens = learnset[moveid].map(x => Number(x[0]));
+			const minGen = Math.min(...gens);
+			if (minGen === 7) learnsets[id][moveid] = '7';
+			if (minGen === 6) learnsets[id][moveid] = '67';
+			if (minGen === 5) learnsets[id][moveid] = '567';
+			if (minGen === 4) learnsets[id][moveid] = '4567';
+			if (minGen === 3) learnsets[id][moveid] = '34567';
+			if (gens.indexOf(6) >= 0) learnsets[id][moveid] += 'p';
+			if (gens.indexOf(7) >= 0) learnsets[id][moveid] += 'q';
+		}
+	}
+	const G2Learnsets = Tools.mod('gen2').data.Learnsets;
+	for (const id in G2Learnsets) {
+		const learnset = G2Learnsets[id].learnset;
+		for (const moveid in learnset) {
+			const gens = learnset[moveid].map(x => Number(x[0]));
+			const minGen = Math.min(...gens);
+			if (!learnsets[id][moveid]) learnsets[id][moveid] = ''; // should never happen
+			if (minGen === 2) learnsets[id][moveid] = '2' + learnsets[id][moveid];
+			if (minGen === 1) learnsets[id][moveid] = '12' + learnsets[id][moveid];
+		}
+	}
+
+	//
+	// Past gen table
+	//
+
+	for (const genNum of [6, 5, 4, 3, 2, 1]) {
+		const gen = 'gen' + genNum;
+		const genData = Tools.mod(gen).data;
+		const nextGenData = Tools.mod('gen' + (genNum + 1)).data;
+		const overrideStats = {};
+		BattleTeambuilderTable[gen].overrideStats = overrideStats;
+		const overrideType = {};
+		BattleTeambuilderTable[gen].overrideType = overrideType;
+		const overrideAbility = {};
+		BattleTeambuilderTable[gen].overrideAbility = overrideAbility;
+		for (const id in genData.Pokedex) {
+			const pastEntry = genData.Pokedex[id];
+			const nowEntry = Tools.data.Pokedex[id];
+			const nowType = nowEntry.types.join('/');
+			for (const stat in pastEntry.baseStats) {
+				if (stat === 'spd' && genNum === 1) continue;
+				if (pastEntry.baseStats[stat] !== nowEntry.baseStats[stat]) {
+					if (!overrideStats[id]) overrideStats[id] = {};
+					overrideStats[id][stat] = pastEntry.baseStats[stat];
+				}
+				if (pastEntry.types.join('/') !== nowType) {
+					overrideType[id] = pastEntry.types.join('/');
+				}
+				if (pastEntry.abilities['0'] !== nowEntry.abilities['0']) {
+					overrideAbility[id] = pastEntry.abilities['0'];
+				}
+			}
+		}
+
+		const overrideBP = {};
+		BattleTeambuilderTable[gen].overrideBP = overrideBP;
+		const overrideAcc = {};
+		BattleTeambuilderTable[gen].overrideAcc = overrideAcc;
+		const overridePP = {};
+		BattleTeambuilderTable[gen].overridePP = overridePP;
+		const overrideMoveDesc = {};
+		BattleTeambuilderTable[gen].overrideMoveDesc = overrideMoveDesc;
+		const overrideMoveType = {};
+		BattleTeambuilderTable[gen].overrideMoveType = overrideMoveType;
+		for (const id in genData.Movedex) {
+			const pastEntry = genData.Movedex[id];
+			const nowEntry = Tools.data.Movedex[id];
+			const nextEntry = nextGenData.Movedex[id];
+			if (pastEntry.basePower !== nowEntry.basePower) {
+				overrideBP[id] = pastEntry.basePower;
+			}
+			if (pastEntry.accuracy !== nowEntry.accuracy) {
+				overrideAcc[id] = pastEntry.accuracy;
+			}
+			if (pastEntry.pp !== nowEntry.pp) {
+				overridePP[id] = pastEntry.pp;
+			}
+			if (pastEntry.type !== nowEntry.type) {
+				overrideMoveType[id] = pastEntry.type;
+			}
+			if (pastEntry.shortDesc !== nextEntry.shortDesc) {
+				overrideMoveDesc[id] = pastEntry.shortDesc;
+			}
+		}
+
+		const overrideItemDesc = {};
+		BattleTeambuilderTable[gen].overrideItemDesc = overrideItemDesc;
+		for (const id in genData.Items) {
+			const pastEntry = genData.Items[id];
+			const nextEntry = nextGenData.Items[id];
+			if (!nextEntry) continue; // amulet coin
+			if (pastEntry.desc !== nextEntry.desc) {
+				overrideItemDesc[id] = pastEntry.desc;
+			}
+		}
+	}
+
+	buf += 'exports.BattleTeambuilderTable = ' + JSON.stringify(BattleTeambuilderTable) + ';\n\n';
+
+	fs.writeFileSync(path.resolve(dataDir, 'teambuilder-tables.js'), buf);
+}
+
+console.log("DONE");
+
+/*********************************************************
+ * Build pokedex.js
+ *********************************************************/
+
+process.stdout.write("Building `data/pokedex.js`... ");
+
+{
+	const Pokedex = requireNoCache('../data/Pokemon-World/data/pokedex.js').BattlePokedex;
+	for (const id in Pokedex) {
+		const entry = Pokedex[id];
+		if (Tools.data.FormatsData[id]) {
+			// console.log('formatsentry:' + id);
+			const formatsEntry = Tools.data.FormatsData[id];
+			if (formatsEntry.tier) entry.tier = formatsEntry.tier;
+			if (formatsEntry.requiredItem) entry.requiredItem = formatsEntry.requiredItem;
+			if (formatsEntry.isNonstandard) entry.isNonstandard = formatsEntry.isNonstandard;
+			if (formatsEntry.unreleasedHidden) entry.unreleasedHidden = formatsEntry.unreleasedHidden;
+		}
+	}
+	const buf = 'exports.BattlePokedex = ' + es3stringify(Pokedex) + ';';
+	fs.writeFileSync(path.resolve(dataDir, 'pokedex.js'), buf);
+}
+
+console.log("DONE");
+
+/*********************************************************
+ * Build moves.js
+ *********************************************************/
+
+process.stdout.write("Building `data/moves,items,abilities,typechart,learnsets.js`...");
+
+{
+	const Movedex = requireNoCache('../data/Pokemon-World/data/moves.js').BattleMovedex;
+	const buf = 'exports.BattleMovedex = ' + es3stringify(Movedex) + ';';
+	fs.writeFileSync(path.resolve(dataDir, 'moves.js'), buf);
+}
+
+/*********************************************************
+ * Build items.js
+ *********************************************************/
+
+{
+	const Items = requireNoCache('../data/Pokemon-World/data/items.js').BattleItems;
+	const buf = 'exports.BattleItems = ' + es3stringify(Items) + ';';
+	fs.writeFileSync(path.resolve(dataDir, 'items.js'), buf);
+}
+
+/*********************************************************
+ * Build abilities.js
+ *********************************************************/
+
+{
+	const Abilities = requireNoCache('../data/Pokemon-World/data/abilities.js').BattleAbilities;
+	const buf = 'exports.BattleAbilities = ' + es3stringify(Abilities) + ';';
+	fs.writeFileSync(path.resolve(dataDir, 'abilities.js'), buf);
+}
+
+/*********************************************************
+ * Build typechart.js
+ *********************************************************/
+
+{
+	const TypeChart = requireNoCache('../data/Pokemon-World/data/typechart.js').BattleTypeChart;
+	const buf = 'exports.BattleTypeChart = ' + es3stringify(TypeChart) + ';';
+	fs.writeFileSync(path.resolve(dataDir, 'typechart.js'), buf);
+}
+
+/*********************************************************
+ * Build aliases.js
+ *********************************************************/
+
+{
+	const Aliases = requireNoCache('../data/Pokemon-World/data/aliases.js').BattleAliases;
+	const buf = 'exports.BattleAliases = ' + es3stringify(Aliases) + ';';
+	fs.writeFileSync(path.resolve(dataDir, 'aliases.js'), buf);
+}
+
+/*********************************************************
+ * Build formats-data.js
+ *********************************************************/
+
+{
+	const FormatsData = requireNoCache('../data/Pokemon-World/data/formats-data.js').BattleFormatsData;
+	const buf = 'exports.BattleFormatsData = ' + es3stringify(FormatsData) + ';';
+	fs.writeFileSync(path.resolve(dataDir, 'formats-data.js'), buf);
+}
+
+/*********************************************************
+ * Build learnsets.js
+ *********************************************************/
+
+{
+	const Learnsets = requireNoCache('../data/Pokemon-World/data/learnsets.js').BattleLearnsets;
+	const buf = 'exports.BattleLearnsets = ' + es3stringify(Learnsets) + ';';
+	fs.writeFileSync(path.resolve(dataDir, 'learnsets.js'), buf);
+}
+
+console.log("DONE");
