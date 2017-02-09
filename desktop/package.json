@@ -1,0 +1,17 @@
+{
+  "name": "Pokemon World",
+  "version": "0.3.0",
+
+  "main": "index.html",
+  "node-remote": "main.pokemon-world.online",
+  "no-edit-menu": false,
+  "window": {
+	  "icon": "",
+    "title": "Loading...",
+    "toolbar": false,
+    "show": false
+  },
+  "webkit": {
+    "plugin": true
+  }
+}
