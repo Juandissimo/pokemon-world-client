@@ -5,12 +5,12 @@
 		<meta http-equiv="X-UA-Compatible" content="IE=Edge" />
 		<link rel="icon" href="//main.pokemon-world.online/favicon.png" id="dynamic-favicon" />
 		<link rel="icon" sizes="128x128" href="//main.pokemon-world.online/favicon-128.png" />
-		<link rel="stylesheet" href="//main.pokemon-world.online/style/client.css" />
-		<link rel="stylesheet" href="//testclient.pokemon-world.online/style/sim-types.css" />
-		<link rel="stylesheet" href="//testclient.pokemon-world.online/style/battle.css" />
-		<link rel="stylesheet" href="//testclient.pokemon-world.online/style/utilichart.css" />
-		<link rel="stylesheet" href="//testclient.pokemon-world.online/style/font-awesome.css" />
-		<link rel="stylesheet" href="//testclient.pokemon-world.online/style/jquery.slider.min.css" />
+		<link rel="stylesheet" href="//main.pokemon-world.online/style/client.css" /> pull main cient.css from official host
+		<link rel="stylesheet" href="/style/sim-types.css" />
+		<link rel="stylesheet" href="/style/battle.css" />
+		<link rel="stylesheet" href="/style/utilichart.css" />
+		<link rel="stylesheet" href="/style/font-awesome.css" />
+		<link rel="stylesheet" href="/style/jquery.slider.min.css" />
 		<!-- meta name="mobile-web-app-capable" content="yes" / -->
 		<!-- meta name="apple-mobile-web-app-capable" content="yes" / -->
 		<meta name="robots" content="noindex" />
@@ -63,64 +63,64 @@
 		<script>
 			document.getElementById('loading-message').innerHTML += ' Connecting to host<br />';
 		</script>
-		<script src="//testclient.pokemon-world.online/js/lib/jquery-2.1.4.min.js"></script>
-		<script src="//testclient.pokemon-world.online/js/lib/jquery-cookie.js"></script>
-		<script src="//testclient.pokemon-world.online/js/lib/autoresize.jquery.min.js"></script>
-		<script src="//testclient.pokemon-world.online/js/lib/jquery.json-2.3.min.js"></script>
-		<script src="//testclient.pokemon-world.online/js/lib/soundmanager2-nodebug-jsmin.js"></script>
+		<script src="/js/lib/jquery-2.1.4.min.js"></script>
+		<script src="/js/lib/jquery-cookie.js"></script>
+		<script src="/js/lib/autoresize.jquery.min.js"></script>
+		<script src="/js/lib/jquery.json-2.3.min.js"></script>
+		<script src="/js/lib/soundmanager2-nodebug-jsmin.js"></script>
 		<script>
-			soundManager.setup({url: '//main.pokemon-world.online/swf/'});
+			soundManager.setup({url: '/swf/'});
 		</script>
-		<script src="//testclient.pokemon-world.online/js/lib/html-css-sanitizer-minified.js"></script>
-		<script src="//testclient.pokemon-world.online/js/lib/lodash.compat.js"></script>
-		<script src="//testclient.pokemon-world.online/js/lib/backbone.js"></script>
-		<script src="//testclient.pokemon-world.online/js/lib/d3.v3.min.js"></script>
+		<script src="/js/lib/html-css-sanitizer-minified.js"></script>
+		<script src="/js/lib/lodash.compat.js"></script>
+		<script src="/js/lib/backbone.js"></script>
+		<script src="/js/lib/d3.v3.min.js"></script>
 
 		<script>
 			document.getElementById('loading-message').innerHTML += ' Connecting to database<br />';
 		</script>
 
-		<script src="//testclient.pokemon-world.online/config/config.js"></script>
-		<script src="//testclient.pokemon-world.online/js/battledata.js"></script>
-		<script src="//testclient.pokemon-world.online/js/storage.js"></script>
-		<script src="//testclient.pokemon-world.online/data/pokedex-mini.js"></script>
-		<script src="//testclient.pokemon-world.online/data/typechart.js"></script>
-		<script src="//testclient.pokemon-world.online/js/battle.js"></script>
-		<script src="//testclient.pokemon-world.online/js/lib/sockjs-1.1.1-nwjsfix.min.js"></script>
-		<script src="//testclient.pokemon-world.online/js/lib/color-thief.min.js"></script>
+		<script src="/config/config.js"></script>
+		<script src="/js/battledata.js"></script>
+		<script src="//main.pokemon-world.online/js/storage.js"></script> // call main storage
+		<script src="/data/pokedex-mini.js"></script>
+		<script src="/data/typechart.js"></script>
+		<script src="/js/battle.js"></script>
+		<script src="/js/lib/sockjs-1.1.1-nwjsfix.min.js"></script>
+		<script src="/js/lib/color-thief.min.js"></script>
 
 		<script>
 			document.getElementById('loading-message').innerHTML += ' TestClient Connected<br />';
 		</script>
 
-		<script src="//testclient.pokemon-world.online/js/client.js"></script>
-		<script src="//testclient.pokemon-world.online/js/client-topbar.js"></script>
-		<script src="//testclient.pokemon-world.online/js/client-mainmenu.js"></script>
-		<script src="//testclient.pokemon-world.online/js/client-teambuilder.js"></script>
-		<script src="//testclient.pokemon-world.online/js/client-ladder.js"></script>
-		<script src="//testclient.pokemon-world.online/js/client-chat.js"></script>
-		<script src="//testclient.pokemon-world.online/js/client-chat-tournament.js"></script>
-		<script src="//testclient.pokemon-world.online/js/client-battle-tooltips.js"></script>
-		<script src="//testclient.pokemon-world.online/js/client-battle.js"></script>
-		<script src="//testclient.pokemon-world.online/js/client-rooms.js"></script>
-		<script src="//testclient.pokemon-world.online/data/graphics.js"></script>
+		<script src="//main.pokemon-world.online/js/client.js"></script> // call binding for client.js to client.css
+		<script src="/js/client-topbar.js"></script>
+		<script src="/js/client-mainmenu.js"></script>
+		<script src="/js/client-teambuilder.js"></script>
+		<script src="/js/client-ladder.js"></script>
+		<script src="/js/client-chat.js"></script>
+		<script src="/js/client-chat-tournament.js"></script>
+		<script src="/js/client-battle-tooltips.js"></script>
+		<script src="/js/client-battle.js"></script>
+		<script src="/js/client-rooms.js"></script>
+		<script src="/data/graphics.js"></script>
 
 		<script>
 			var app = new App();
 		</script>
 
-		<script src="//testclient.pokemon-world.online/js/lib/jquery.slider.min.js"></script>
+		<script src="/js/lib/jquery.slider.min.js"></script>
 
-		<script src="//testclient.pokemon-world.online/data/pokedex.js"></script>
-		<script src="//testclient.pokemon-world.online/data/moves.js"></script>
-		<script src="//testclient.pokemon-world.online/data/items.js"></script>
-		<script src="//testclient.pokemon-world.online/data/abilities.js"></script>
+		<script src="/data/pokedex.js"></script>
+		<script src="/data/moves.js"></script>
+		<script src="/data/items.js"></script>
+		<script src="/data/abilities.js"></script>
 
-		<script src="//testclient.pokemon-world.online/data/search-index.js"></script>
-		<script src="//testclient.pokemon-world.online/data/teambuilder-tables.js"></script>
-		<script src="//testclient.pokemon-world.online/js/search.js"></script>
+		<script src="/data/search-index.js"></script>
+		<script src="/data/teambuilder-tables.js"></script>
+		<script src="/js/search.js"></script>
 
-		<script src="//testclient.pokemon-world.online/data/aliases.js" async="async"></script>
+		<script src="/data/aliases.js" async="async"></script>
 
 	</body>
 </html>
