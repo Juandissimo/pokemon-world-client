@@ -5,7 +5,7 @@ mb_internal_encoding('UTF-8');
 
 $psconfig = [
 // password and SID hashing settings
-        'sysop' => 'mayhem' // undefined im pretty sure you people can fix this small task
+        'sysops' => 'mayhem' // undefined im pretty sure you people can fix this small task
 	'password_cost' => 1,
 	'sid_length' => 7,
 	'sid_cost' => 4,
@@ -13,7 +13,7 @@ $psconfig = [
 // database
 
 	'server' => 'localhost',
-	'password' => '',
+	'password' => '_default',
 	'prefix' => '',
 
 // CORS requests test
