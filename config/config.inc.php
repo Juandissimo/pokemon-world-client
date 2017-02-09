@@ -1,4 +1,5 @@
 <?php
+// This file is not the same as main
 
 mb_internal_encoding('UTF-8');
 
