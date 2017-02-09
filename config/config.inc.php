@@ -3,11 +3,8 @@
 mb_internal_encoding('UTF-8');
 
 $psconfig = [
-        // keep to string " 'sysops' => ['sysop1', 'nom2'], "
-	'sysops' => ['zayan''],
-
 // password and SID hashing settings
-
+        'sysop' => 'mayhem' // undefined im pretty sure you people can fix this small task
 	'password_cost' => 1,
 	'sid_length' => 7,
 	'sid_cost' => 4,
@@ -15,11 +12,8 @@ $psconfig = [
 // database
 
 	'server' => 'localhost',
-	'username' => 'zayan',
-	'password' => '00000000',
-	'database' => 'zayan_sql',
-	'prefix' => 'xmbl_',
-	'charset' => 'zayan_crisis',
+	'password' => '',
+	'prefix' => '',
 
 // CORS requests test
 
