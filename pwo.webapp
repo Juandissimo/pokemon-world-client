@@ -1,0 +1,26 @@
+{
+  "version": "0.1",
+  "name": "Pokemon World",
+  "description": "Pokemon battles online",
+  "launch_path": "/",
+  "icons": {
+    "16": "/favicon-16.png",
+    "32": "/favicon-32.png",
+    "48": "/favicon-48.png",
+    "128": "/favicon-128.png"
+  },
+  "developer": {
+    "name": "Adam Snowden",
+    "url": "http://pokemon-world.online/"
+  },
+  "installs_allowed_from": [
+    "https://appstore.mozillalabs.com",
+    "https://marketplace.mozilla.org",
+    "https://marketplace.firefox.com",
+    "http://pokemon-world.online",
+    "https://pokwmon-world.online",
+    "http://www.pokemon-world.online",
+    "https://www.pokemon-world.online"
+  ],
+  "default_locale": "en"
+}

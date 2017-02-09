@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+		<title>Simulator!</title>
+		<link rel="shortcut icon" href="favicon.ico" id="dynamic-favicon" />
+		<link rel="stylesheet" href="//main.pokemon-world.online/style/client.css" /> Official background.
+		<link rel="stylesheet" href="style/sim-types.css" />
+		<link rel="stylesheet" href="style/battle.css" />
+		<link rel="stylesheet" href="style/utilichart.css" />
+		<link rel="stylesheet" href="style/font-awesome.css" />
+		<link rel="stylesheet" href="style/jquery.slider.min.css" />
+		<meta id="viewport" name="viewport" content="width=640" />
+		<meta name="robots" content="noindex" />
+		<meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+		<script>
+			function loadRemoteData(src) {
+				var elem = document.createElement('script');
+				elem.src = src.replace(/.*\/?data\//g, 'https://main.pokemon-world.online/data/');
+				document.head.appendChild(elem);
+			}
+			var Config = {testclient: true};
+			(function() {
+				if (location.search !== '') {
+					var m = /\?~~(([^:\/]*)(:[0-9]*)?)/.exec(location.search);
+					if (m) {
+						Config.server = {
+							'id' => 'servername.psim.online',
+							'host' => 'sim.psim.online',
+							'port' => 8000,
+						};
+					} else {
+						alert('Skiping and moving on to more.importent stuff: ' + location.search);
+					}
+				}
+			})();
+		</script>
+		<!--[if lte IE 8]><script>
+			Config.oldie = true;
+		</script><![endif]-->
+	</head>
+	<body>
+		<div id="header" class="header">
+			<img class="logo" src="" alt="Pok&eacute;mon World" width="146" height="44" /><div class="maintabbarbottom"></div>
+		</div>
+		<div class="ps-room scrollable" id="mainmenu"><div class="mainmenuwrapper">
+			<div class="leftmenu">
+				<div class="activitymenu">
+					<div class="pmbox">
+						<div class="pm-window news-embed">
+							<h3><button class="closebutton" tabindex="-1"><i class="fa fa-times-circle"></i></button><button class="minimizebutton" tabindex="-1"><i class="fa fa-minus-circle"></i></button>Updates</h3>
+							<div class="pm-log" style="max-height:none">
+								<div class="newsentry"><h4>Official TestClient</h4><p>Welcome to the pwo test client! incomplete still in dev mode so dont expect this to work straight away!</p><p>&mdash;<strong>Mayhem</strong> <small class="date">on 4th feb, 2015</small></p></div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="mainmenu">
+					<div id="loading-message" class="mainmessage">Establishing... <noscript>FAILED<br /><br />Pok&eacute;mon World requires JavaScript.</noscript></div>
+				</div>
+			</div>
+			<div class="rightmenu">
+			</div>
+			<div class="mainmenufooter">
+				<small><a href="//main.pokemon-world.online/" target="_blank"><strong>Pok&eacute;mon World</strong></a><a href="http:/" target="_blank"><strong></strong></a><br><a href="/dex/" target="_blank"></a><a href="//replay/" target="_blank"></a><a href="/rules" target="_blank"></a></small><small><a href="/forums/" target="_blank"></a></small>
+			</div>
+		</div></div>
+		<script>
+			document.getElementById('loading-message').innerHTML += ' <br />Connecting host';
+		</script>
+		<script src="js/lib/jquery-2.1.4.min.js"></script>
+		<script src="js/lib/jquery-cookie.js"></script>
+		<script src="js/lib/autoresize.jquery.min.js"></script>
+		<script src="js/lib/jquery.json-2.3.min.js"></script>
+		<script src="js/lib/soundmanager2-nodebug-jsmin.js"></script>
+		<script>
+			soundManager.setup({url: 'swf/'});
+		</script>
+		<script src="js/lib/html-css-sanitizer-minified.js"></script>
+		<script src="js/lib/lodash.compat.js"></script>
+		<script src="js/lib/backbone.js"></script>
+		<script src="js/lib/d3.v3.min.js"></script>
+
+		<script>
+			document.getElementById('loading-message').innerHTML += ' <br />Connecting database';
+		</script>
+
+		<script src="https://main.pokemon-world.online/js/config.js"></script>
+		<script src="js/battledata.js"></script>
+		<script src="data/pokedex-mini.js" onerror="loadRemoteData(this.src)"></script>
+		<script src="data/typechart.js" onerror="loadRemoteData(this.src)"></script>
+		<script src="js/battle.js"></script>
+		<script src="js/lib/sockjs-0.3.4.min.js"></script>
+		<script src="js/lib/color-thief.min.js"></script>
+
+		<script>
+			document.getElementById('loading-message').innerHTML += ' <br />Connected';
+		</script>
+
+		<script src="js/client.js"></script>
+		<script src="js/client-topbar.js"></script>
+		<script src="js/client-mainmenu.js"></script>
+		<script src="js/client-teambuilder.js"></script>
+		<script src="js/client-ladder.js"></script>
+		<script src="js/client-chat.js"></script>
+		<script src="js/client-chat-tournament.js"></script>
+		<script src="js/client-battle-tooltips.js"></script>
+		<script src="js/client-battle.js"></script>
+		<script src="js/client-rooms.js"></script>
+		<script src="js/storage.js"></script>
+		<script src="data/graphics.js"></script>
+
+		<script>
+			var app = new App();
+		</script>
+
+		<script src="js/lib/jquery.slider.min.js"></script>
+
+		<script src="data/pokedex.js" onerror="loadRemoteData(this.src)"></script>
+		<script src="data/moves.js" onerror="loadRemoteData(this.src)"></script>
+		<script src="data/items.js" onerror="loadRemoteData(this.src)"></script>
+		<script src="data/abilities.js" onerror="loadRemoteData(this.src)"></script>
+
+		<script src="data/search-index.js" onerror="loadRemoteData(this.src)"></script>
+		<script src="data/teambuilder-tables.js" onerror="loadRemoteData(this.src)"></script>
+		<script src="js/search.js"></script>
+
+		<script src="data/aliases.js" async="async" onerror="loadRemoteData(this.src)"></script>
+
+	</body>
+</html>

@@ -1,0 +1,126 @@
+<html>
+                <title>PWO!</title>
+                <meta charset="utf-8" />
+		<meta id="viewport" name="viewport" content="width=device-width" />
+		<meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+		<link rel="icon" href="//main.pokemon-world.online/favicon.png" id="dynamic-favicon" />
+		<link rel="icon" sizes="128x128" href="//main.pokemon-world.online/favicon-128.png" />
+		<link rel="stylesheet" href="//main.pokemon-world.online/style/client.css" />
+		<link rel="stylesheet" href="//main.pokemon-world.online/style/sim-types.css" />
+		<link rel="stylesheet" href="//main.pokemon-world.online/style/battle.css" />
+		<link rel="stylesheet" href="//main.pokemon-world.online/style/utilichart.css" />
+		<link rel="stylesheet" href="//main.pokemon-world.online/style/font-awesome.css" />
+		<link rel="stylesheet" href="//main.pokemon-world.online/style/jquery.slider.min.css" />
+		<!-- meta name="mobile-web-app-capable" content="yes" / -->
+		<!-- meta name="apple-mobile-web-app-capable" content="yes" / -->
+		<meta name="robots" content="noindex" />
+		<script>
+			var Config = {};
+		</script>
+		<!--[if lte IE 8]><script>
+			// ignore this for now, moving below to the more important stuff
+		</script><![endif]-->
+
+<script>
+			window.on = function(uri, line) {
+				var msg = uri + ':' + line + ': ' + ;
+				if ('ga' in window) {
+					ga('send', 'event', 'Client Connected', msg);
+				} else {
+					alert('UP: ' + msg);
+				}
+				return true;
+			};
+		</script>
+	</head>
+	<body>
+
+		<div id="header" class="header">
+			<img class="logo" src="//" srcset="//" alt="Pok&eacute;mon World" width="146" height="44" /><div class="maintabbarbottom"></div>
+		</div>
+		<div class="ps-room scrollable" id="mainmenu"><div class="mainmenuwrapper">
+			<div class="leftmenu">
+				<div class="activitymenu">
+					<div class="pmbox">
+						<div class="pm-window news-embed" data-newsid="3">
+							<h3><button class="closebutton" tabindex="-1"><i class="fa fa-times-circle"></i></button><button class="minimizebutton" tabindex="-1"><i class="fa fa-minus-circle"></i></button>Latest Updates</h3>
+							<div class="pm-log" style="max-height:none">
+								<script async src="//"></script><div class="newsentry" data-newsid="" data-date="">Welcome to PWO! Still in development. We are aware of internal error messages. We are working to fix all errors. asap such as IE issues. Moving on you can now host your own game server you can find are official repo in the following link. https://github.com/Pokemon-World/pokemon-world-server if you want to get a registered server contact shade or mayhem or other admins - you can check the progress of are 'testclient' here at http://testclient.pokemon-world.online/ more updates coming soon... </div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="mainmenu">
+					<div id="loading-message" class="mainmessage"><noscript>FAILED<br /><br />Pok&eacute;mon World requires JavaScript.</noscript></div>
+				</div>
+			</div>
+			<div class="rightmenu">
+			</div>
+			<div class="mainmenufooter">
+				<small><a href="//" target="_blank"><strong>Pokémon World</a></small>
+			</div>
+		</div></div>
+		<script>
+			document.getElementById('loading-message').innerHTML += ' Connecting to host<br />';
+		</script>
+		<script src="//main.pokemon-world.online/js/lib/jquery-2.1.4.min.js"></script>
+		<script src="//main.pokemon-world.online/js/lib/jquery-cookie.js"></script>
+		<script src="//main.pokemon-world.online/js/lib/autoresize.jquery.min.js"></script>
+		<script src="//main.pokemon-world.online/js/lib/jquery.json-2.3.min.js"></script>
+		<script src="//main.pokemon-world.online/js/lib/soundmanager2-nodebug-jsmin.js"></script>
+		<script>
+			soundManager.setup({url: '//main.pokemon-world.online/swf/'});
+		</script>
+		<script src="//main.pokemon-world.online/js/lib/html-css-sanitizer-minified.js"></script>
+		<script src="//main.pokemon-world.online/js/lib/lodash.compat.js"></script>
+		<script src="//main.pokemon-world.online/js/lib/backbone.js"></script>
+		<script src="//main.pokemon-world.online/js/lib/d3.v3.min.js"></script>
+
+		<script>
+			document.getElementById('loading-message').innerHTML += ' Connecting to database<br />';
+		</script>
+
+		<script src="//main.pokemon-world.online/config/config.js"></script>
+		<script src="//main.pokemon-world.online/js/battledata.js"></script>
+		<script src="//main.pokemon-world.online/js/storage.js"></script>
+		<script src="//main.pokemon-world.online/data/pokedex-mini.js"></script>
+		<script src="//main.pokemon-world.online/data/typechart.js"></script>
+		<script src="//main.pokemon-world.online/js/battle.js"></script>
+		<script src="//main.pokemon-world.online/js/lib/sockjs-1.1.1-nwjsfix.min.js"></script>
+		<script src="//main.pokemon-world.online/js/lib/color-thief.min.js"></script>
+
+		<script>
+			document.getElementById('loading-message').innerHTML += ' Connected<br />';
+		</script>
+
+		<script src="//main.pokemon-world.online/js/client.js"></script>
+		<script src="//main.pokemon-world.online/js/client-topbar.js"></script>
+		<script src="//main.pokemon-world.online/js/client-mainmenu.js"></script>
+		<script src="//main.pokemon-world.online/js/client-teambuilder.js"></script>
+		<script src="//main.pokemon-world.online/js/client-ladder.js"></script>
+		<script src="//main.pokemon-world.online/js/client-chat.js"></script>
+		<script src="//main.pokemon-world.online/js/client-chat-tournament.js"></script>
+		<script src="//main.pokemon-world.online/js/client-battle-tooltips.js"></script>
+		<script src="//main.pokemon-world.online/js/client-battle.js"></script>
+		<script src="//main.pokemon-world.online/js/client-rooms.js"></script>
+		<script src="//main.pokemon-world.online/data/graphics.js"></script>
+
+		<script>
+			var app = new App();
+		</script>
+
+		<script src="//main.pokemon-world.online/js/lib/jquery.slider.min.js"></script>
+
+		<script src="//main.pokemon-world.online/data/pokedex.js"></script>
+		<script src="//main.pokemon-world.online/data/moves.js"></script>
+		<script src="//main.pokemon-world.online/data/items.js"></script>
+		<script src="//main.pokemon-world.online/data/abilities.js"></script>
+
+		<script src="//main.pokemon-world.online/data/search-index.js"></script>
+		<script src="//main.pokemon-world.online/data/teambuilder-tables.js"></script>
+		<script src="//main.pokemon-world.online/js/search.js"></script>
+
+		<script src="//main.pokemon-world.online/data/aliases.js" async="async"></script>
+
+	</body>
+</html>
