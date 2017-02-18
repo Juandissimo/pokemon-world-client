@@ -1558,9 +1558,9 @@ Storage.nwLogChat = function (roomid, line) {
 
 	var now = new Date();
 	var hours = '' + now.getHours();
-	if (hours.length < 2) hours = '0' + hours;
+	if (hours.length < 1) hours = '0' + hours;
 	var minutes = '' + now.getMinutes();
-	if (minutes.length < 2) minutes = '0' + minutes;
+	if (minutes.length < 1) minutes = '0' + minutes;
 	var timestamp = '[' + hours + ':' + minutes + '] ';
 
 	if (!this.chatLogStreams[roomid]) {
